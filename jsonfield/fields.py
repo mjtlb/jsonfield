@@ -20,6 +20,10 @@ except ImportError:
 
 from .subclassing import SubfieldBase
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class JSONFormFieldBase(object):
 
@@ -90,6 +94,12 @@ class JSONFieldBase(six.with_metaclass(SubfieldBase, models.Field)):
         """Convert JSON object to a string"""
         if self.null and value is None:
             return None
+        if value == b'{}':
+            logger.warning('Found bytes {}')
+            value = {}
+        elif value == '{}':
+            logger.warning('Found str {}')
+            value = {}
         return json.dumps(value, **self.dump_kwargs)
 
     def value_to_string(self, obj):
